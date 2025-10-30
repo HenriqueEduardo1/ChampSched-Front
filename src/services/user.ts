@@ -11,7 +11,7 @@ const USER_API_URL = `${API_BASE_URL}/users`;
  * Cria um novo usuário
  * (No Spring Boot: @PostMapping)
  */
-export const createUser = async (userData: CreateUserData): Promise<UserType> => {
+export async function createUser(userData: CreateUserData): Promise<UserType> {
     const response = await fetch(USER_API_URL, {
         method: 'POST',
         headers: getAuthHeaders(),
@@ -23,9 +23,8 @@ export const createUser = async (userData: CreateUserData): Promise<UserType> =>
 /**
  * R - READ (All)
  * Busca todos os usuários
- * (No Spring Boot: @GetMapping)
  */
-export const getUsers = async (): Promise<UserType[]> => {
+export async function getUsers(): Promise<UserType[]> {
     const response = await fetch(USER_API_URL, {
         method: 'GET',
         headers: getAuthHeaders(),
@@ -36,9 +35,8 @@ export const getUsers = async (): Promise<UserType[]> => {
 /**
  * R - READ (One)
  * Busca um usuário pelo ID
- * (No Spring Boot: @GetMapping("/{id}"))
  */
-export const getUserById = async (id: number): Promise<UserType> => {
+export async function getUserById(id: number): Promise<UserType> {
     const response = await fetch(`${USER_API_URL}/${id}`, {
         method: 'GET',
         headers: getAuthHeaders(),
@@ -49,9 +47,8 @@ export const getUserById = async (id: number): Promise<UserType> => {
 /**
  * U - UPDATE
  * Atualiza um usuário existente
- * (No Spring Boot: @PutMapping("/{id}"))
  */
-export const updateUser = async (id: number, userData: UpdateUserData): Promise<UserType> => {
+export async function updateUser(id: number, userData: UpdateUserData): Promise<UserType> {
     const response = await fetch(`${USER_API_URL}/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
@@ -63,9 +60,8 @@ export const updateUser = async (id: number, userData: UpdateUserData): Promise<
 /**
  * D - DELETE
  * Deleta um usuário
- * (No Spring Boot: @DeleteMapping("/{id}"))
  */
-export const deleteUser = async (id: number): Promise<void> => {
+export async function deleteUser(id: number): Promise<void> {
     const response = await fetch(`${USER_API_URL}/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),

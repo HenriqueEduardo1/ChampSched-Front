@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, Card, CardContent, CardHeader, TextField, Box } from '@mui/material';
 import { useState } from 'react';
+import { login } from '../../services/auth';
 
 export const LoginPage = () => {
     const navigate = useNavigate();
@@ -26,10 +27,15 @@ export const LoginPage = () => {
             setErrors(validationErrors);
             return; // Não continua para a lógica de login
         }
-        
-        console.log('Dados validados, simulando login:', { username, password });
-        localStorage.setItem('authToken', 'fake-token-for-testing');
-        navigate('/');
+
+        login({ username, password })
+            .then(() => {
+                navigate('/');
+            })
+            .catch((error) => {
+                setErrors({ username: error.message });
+            });
+        console.log('Formulário enviado com:', { username, password });
     };
     
     return (

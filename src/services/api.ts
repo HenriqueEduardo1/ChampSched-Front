@@ -37,3 +37,9 @@ export const handleResponse = async (response: Response) => {
     // Retorna o JSON para respostas de sucesso (200, 201)
     return response.json();
 };
+
+export const getPublicHeaders = (): HeadersInit => {
+    return {
+        'Content-Type': 'application/json',
+    };
+};
