@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
-import { CadastroPage } from './pages/CadastroPage';
+import { AddUserPage } from './pages/AddUserPage';
 import { PerfilPage } from './pages/PerfilPage';
 import { CampeonatosPage } from './pages/CampeonatosPage';
 import { TimesPage } from './pages/TimesPage';
@@ -29,7 +29,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/cadastro",
-        element: <CadastroPage />
+        element: <AddUserPage />
     },
     {
         path: "/campeonatos",

@@ -1,43 +1,50 @@
 import { Box, Button, Container, FormControlLabel, Switch, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import type { FormEvent, ChangeEvent } from "react";
+import { useNavigate } from 'react-router-dom';
+import { createUser } from '../../services/user';
+import type { CreateUserData } from '../../types/user';
+import { register } from "../../services/auth";
 
 interface ValidationErrorInterface {
-    name?: string;
-    contact?: string;
+    nome?: string;
+    username?: string;
+    contato?: string;
     email?: string;
-    password?: string;
-    confirmPassword?: string;
+    senha?: string;
+    confSenha?: string;
+    api?: string;
 };
 
 interface FormDataInterface {
-    name: string;
-    contact: string;
+    nome: string;
+    username: string;
+    contato: string;
     email: string;
-    password: string;
-    confirmPassword: string;
+    senha: string;
+    confSenha: string;
     isOrganizer?: boolean;
 };
 
-export const CadastroPage = () => {
+export const AddUserPage = () => {
     const [formData, setFormData] = useState<FormDataInterface>({
-        name: '',
-        contact: '',
+        nome: '',
+        username: '',
+        contato: '',
         email: '',
-        password: '',
-        confirmPassword: '',
+        senha: '',
+        confSenha: '',
         isOrganizer: false,
     });
     const [errors, setErrors] = useState<ValidationErrorInterface>({});
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { name } = event.target;
 
         const isCheckbox = event.target.type === 'checkbox';
 
-        // Pega o valor:
-        // Se for checkbox, usa 'checked' (true/false)
-        // Se não for, usa 'value' (o texto)
         const value = isCheckbox ? event.target.checked : event.target.value;
         
         setFormData(prev => ({
@@ -50,41 +57,53 @@ export const CadastroPage = () => {
         }
     };
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault(); // Impede o recarregamento da página
 
-        const { name, contact, email, password, confirmPassword } = formData;
+        const { nome, username, contato, email, senha, confSenha } = formData;
         const newErrors: ValidationErrorInterface = {};
 
         // Validação de campos vazios
-        if (!name) newErrors.name = "O nome é obrigatório.";
-        if (!contact) newErrors.contact = "O contato é obrigatório.";
+        if (!nome) newErrors.nome = "O nome é obrigatório.";
+        if (!username) newErrors.username = "O nome de usuário é obrigatório.";
+        if (!contato) newErrors.contato = "O contato é obrigatório.";
         if (!email) newErrors.email = "O email é obrigatório.";
-        if (!password) newErrors.password = "A senha é obrigatória.";
+        if (!senha) newErrors.senha = "A senha é obrigatória.";
 
         // Validação da confirmação de senha
-        if (!confirmPassword) {
-            newErrors.confirmPassword = "A confirmação da senha é obrigatória.";
-        } else if (password && password !== confirmPassword) {
+        if (!confSenha) {
+            newErrors.confSenha = "A confirmação da senha é obrigatória.";
+        } else if (senha && senha !== confSenha) {
             // Só executa se a senha principal foi preenchida
-            newErrors.confirmPassword = "As senhas não conferem.";
+            newErrors.confSenha = "As senhas não conferem.";
         }
 
         if (Object.keys(newErrors).length > 0) {
-            // Se houver erros, atualiza o estado de erros e para a execução
             setErrors(newErrors);
             return;
         }
 
-        console.log("Formulário validado! Pronto para enviar (simulação):", formData);
+        setLoading(true);
         
-        // (No futuro, aqui você chamará seu serviço de cadastro)
-        // ex: try {
-        //         await authService.register(formData);
-        //         navigate('/login');
-        //     } catch (err) {
-        //         setErrors({ api: err.message });
-        //     }
+        const dataToAPI: CreateUserData = {
+            nome,
+            username,
+            contato,
+            email,
+            senha,
+            organizador: formData.isOrganizer || false,
+        };
+
+        try {
+            await register(dataToAPI);
+            alert('Usuário cadastrado com sucesso!');
+            navigate('/login');
+        } catch (error) {
+            const apiError = error instanceof Error ? error.message : 'Erro desconhecido';
+            setErrors({ api: apiError });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -109,24 +128,35 @@ export const CadastroPage = () => {
                 <TextField
                     fullWidth
                     label="Nome"
-                    name="name"
+                    name="nome"
                     variant="outlined"
                     margin="normal"
-                    value={formData.name}
+                    value={formData.nome}
                     onChange={handleChange}
-                    error={!!errors.name}
-                    helperText={errors.name}
+                    error={!!errors.nome}
+                    helperText={errors.nome}
+                />
+                <TextField
+                    fullWidth
+                    label="Nome de Usuário"
+                    name="username"
+                    variant="outlined"
+                    margin="normal"
+                    value={formData.username}
+                    onChange={handleChange}
+                    error={!!errors.username}
+                    helperText={errors.username}
                 />
                 <TextField
                     fullWidth
                     label="Contato"
-                    name="contact"
+                    name="contato"
                     variant="outlined"
                     margin="normal"
-                    value={formData.contact}
+                    value={formData.contato}
                     onChange={handleChange}
-                    error={!!errors.contact}
-                    helperText={errors.contact}
+                    error={!!errors.contato}
+                    helperText={errors.contato}
                 />
                 <TextField
                     fullWidth
@@ -143,26 +173,26 @@ export const CadastroPage = () => {
                 <TextField
                     fullWidth
                     label="Senha"
-                    name="password"
+                    name="senha"
                     variant="outlined"
                     margin="normal"
                     type="password"
-                    value={formData.password}
+                    value={formData.senha}
                     onChange={handleChange}
-                    error={!!errors.password}
-                    helperText={errors.password}
+                    error={!!errors.senha}
+                    helperText={errors.senha}
                 />
                 <TextField
                     fullWidth
                     label="Confirme a Senha"
-                    name="confirmPassword"
+                    name="confSenha"
                     variant="outlined"
                     margin="normal"
                     type="password"
-                    value={formData.confirmPassword}
+                    value={formData.confSenha}
                     onChange={handleChange}
-                    error={!!errors.confirmPassword}
-                    helperText={errors.confirmPassword}
+                    error={!!errors.confSenha}
+                    helperText={errors.confSenha}
                 />
                 <FormControlLabel
                     control={
@@ -172,17 +202,22 @@ export const CadastroPage = () => {
                             name="isOrganizer"
                         />
                     }
-                    // 3. Adicione um rótulo (Label)
                     label="Sou um organizador de campeonatos"
                     sx={{ mt: 1, display: 'block' }}
                 />
+                {errors.api && (
+                    <Typography color="error" variant="body2" sx={{ mt: 2, textAlign: 'center' }}>
+                        {errors.api}
+                    </Typography>
+                )}
                 <Button
                     type="submit"
                     variant="contained"
                     fullWidth
                     sx={{ mt: 3 }}
+                    disabled={loading}
                 >
-                    Cadastrar
+                    {loading ? 'Cadastrando...' : 'Cadastrar'}
                 </Button>
             </Container>
         </Box>
