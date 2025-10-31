@@ -9,9 +9,8 @@ const TIME_API_URL = `${API_BASE_URL}/times`;
 /**
  * C - CREATE
  * Cria um novo time
- * (No Spring Boot: @PostMapping)
  */
-export const createTime = async (userData: CreateTimeData): Promise<TimeType> => {
+export async function createTime(userData: CreateTimeData): Promise<TimeType> {
     const response = await fetch(TIME_API_URL, {
         method: 'POST',
         headers: getAuthHeaders(),
@@ -23,9 +22,8 @@ export const createTime = async (userData: CreateTimeData): Promise<TimeType> =>
 /**
  * R - READ (All)
  * Busca todos os times
- * (No Spring Boot: @GetMapping)
  */
-export const getTimes = async (): Promise<TimeType[]> => {
+export async function getTimes(): Promise<TimeType[]> {
     const response = await fetch(TIME_API_URL, {
         method: 'GET',
         headers: getAuthHeaders(),
@@ -36,9 +34,8 @@ export const getTimes = async (): Promise<TimeType[]> => {
 /**
  * R - READ (One)
  * Busca um time pelo ID
- * (No Spring Boot: @GetMapping("/{id}"))
  */
-export const getTimeById = async (id: number): Promise<TimeType> => {
+export async function getTimeById(id: number): Promise<TimeType> {
     const response = await fetch(`${TIME_API_URL}/${id}`, {
         method: 'GET',
         headers: getAuthHeaders(),
@@ -49,9 +46,8 @@ export const getTimeById = async (id: number): Promise<TimeType> => {
 /**
  * U - UPDATE
  * Atualiza um time existente
- * (No Spring Boot: @PutMapping("/{id}"))
  */
-export const updateTime = async (id: number, userData: UpdateTimeData): Promise<TimeType> => {
+export async function updateTime(id: number, userData: UpdateTimeData): Promise<TimeType> {
     const response = await fetch(`${TIME_API_URL}/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
@@ -63,9 +59,8 @@ export const updateTime = async (id: number, userData: UpdateTimeData): Promise<
 /**
  * D - DELETE
  * Deleta um time
- * (No Spring Boot: @DeleteMapping("/{id}"))
  */
-export const deleteTime = async (id: number): Promise<void> => {
+export async function deleteTime(id: number): Promise<void> {
     const response = await fetch(`${TIME_API_URL}/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),

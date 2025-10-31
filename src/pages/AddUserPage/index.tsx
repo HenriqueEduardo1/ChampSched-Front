@@ -2,7 +2,6 @@ import { Box, Button, Container, FormControlLabel, Switch, TextField, Typography
 import { useState } from "react";
 import type { FormEvent, ChangeEvent } from "react";
 import { useNavigate } from 'react-router-dom';
-import { createUser } from '../../services/user';
 import type { CreateUserData } from '../../types/user';
 import { register } from "../../services/auth";
 
@@ -96,7 +95,7 @@ export const AddUserPage = () => {
 
         try {
             await register(dataToAPI);
-            alert('Usuário cadastrado com sucesso!');
+            alert('Usuário cadastrado');
             navigate('/login');
         } catch (error) {
             const apiError = error instanceof Error ? error.message : 'Erro desconhecido';
