@@ -2,7 +2,8 @@
  * URL base da sua API Spring Boot.
  * (Pode ser movido para um arquivo .env no futuro)
  */
-export const API_BASE_URL = 'http://localhost:8080/api/v1';
+// export const API_BASE_URL = 'http://localhost:8080';
+export const API_BASE_URL = '/api';
 
 /**
  * Retorna os headers de autenticação (Bearer Token)

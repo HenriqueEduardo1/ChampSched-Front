@@ -11,6 +11,7 @@ import { TimesPage } from './pages/TimesPage';
 
 import { ProtectedLayout } from './components/ProtectedLayout';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import { TimeDetailPage } from './pages/TimesPage/TimeDetailPage';
 
 const theme = createTheme({
     palette: {
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
             {
                 path: "/times",
                 element: <TimesPage />
+            },
+            {
+                path: "/times/:id",
+                element: <TimeDetailPage />
             }
         ]
     },
