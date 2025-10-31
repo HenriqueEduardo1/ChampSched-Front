@@ -13,14 +13,11 @@ import {
 import { MainToolbar } from '../../../components/main-toolbar';
 import { getTimeById } from '../../../services/time';
 import type { TimeType } from '../../../types/time';
-import { getUsers } from '../../../services/user';
-import type { UserType } from '../../../types/user';
 
 export function TimeDetailPage() {
     const [time, setTime] = useState<TimeType | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [allUsers, setAllUsers] = useState<UserType[]>([]);
 
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -35,23 +32,18 @@ export function TimeDetailPage() {
         const timeId = Number(id);
         if (isNaN(timeId)) {
             setError("ID inválido.");
-            setIsLoading(false);
             return;
         }
 
+        // Renomeie de volta para 'fetchTime' (singular)
         const fetchTime = async () => {
             try {
                 setIsLoading(true);
                 setError(null);
                 
-                const [timeData, usersData] = await Promise.all([
-                    getTimeById(timeId), // Pega o time
-                    getUsers()           // Pega TODOS os usuários
-                ]); // Chama o serviço
-                setTime(timeData);
-                setAllUsers(usersData);
-                console.log(timeData);
-                console.log(usersData);
+                const data = await getTimeById(timeId); 
+                
+                setTime(data); // Salva o time (que agora inclui os nomes)
 
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Erro ao buscar dados do time');
@@ -62,8 +54,7 @@ export function TimeDetailPage() {
 
         fetchTime();
 
-    // Este efeito irá rodar novamente se o 'id' na URL mudar.
-    }, [id]);
+    }, [id]); // Dependência [id] está correta
 
     const renderContent = () => {
         if (isLoading) {
@@ -78,16 +69,12 @@ export function TimeDetailPage() {
             return <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>;
         }
 
-        if (!time || allUsers.length === 0) {
+        if (!time) {
             return <Alert severity="info" sx={{ mt: 2 }}>Time não encontrado.</Alert>;
         }
 
-        const integrantesDoTime = allUsers.filter(user => 
-            time.integrantesId.includes(user.id)
-        );
-
-        const names = integrantesDoTime.length > 0
-            ? integrantesDoTime.map(user => user.nome).join(', ')
+        const names = time.integrantes && time.integrantes.length > 0
+            ? time.integrantes.map(user => user.nome).join(', ')
             : 'Não informado';
 
         return (
