@@ -94,6 +94,21 @@ export const logout = (): void => {
  * Usa o token salvo para buscar os dados do usuário logado.
  */
 export const getMe = async (): Promise<UserType> => {
+    const token = localStorage.getItem('authToken'); // Simulação (remover depois)
+    if (token === 'fake-jwt-token-from-login-123') {
+        console.warn("SIMULAÇÃO: Retornando usuário 'admin' para getMe()");
+        const fakeUser: UserType = {
+            id: 1,
+            nome: 'Admin (Simulado)',
+            username: 'admin',
+            email: 'admin@chamsched.com',
+            contato: '999999999',
+            organizador: true
+        };
+        // Retorna o usuário falso após um pequeno atraso
+        return new Promise(resolve => setTimeout(() => resolve(fakeUser), 500));
+    }
+
     const response = await fetch(`${API_BASE_URL}/users/me`, { // Endpoint comum para "quem sou eu"
         method: 'GET',
         headers: getAuthHeaders(), // Esta chamada é AUTENTICADA

@@ -26,7 +26,6 @@ export function TimesPage() {
     const [filteredTimes, setFilteredTimes] = useState<TimeType[]>([]);
     const [timeNameQuery, setTimeNameQuery] = useState<string>('');
 
-    // --- Lógica de Busca de Dados ---
     useEffect(() => {
         const fetchTimes = async () => {
             try {
@@ -70,7 +69,6 @@ export function TimesPage() {
             return <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>;
         }
 
-        // Verifica a lista de EXIBIÇÃO
         if (filteredTimes.length === 0) {
             // Se a lista mestra tiver itens, significa que o filtro não encontrou nada
             if (allTimes.length > 0) {

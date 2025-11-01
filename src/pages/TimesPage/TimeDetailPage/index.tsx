@@ -35,7 +35,6 @@ export function TimeDetailPage() {
             return;
         }
 
-        // Renomeie de volta para 'fetchTime' (singular)
         const fetchTime = async () => {
             try {
                 setIsLoading(true);
