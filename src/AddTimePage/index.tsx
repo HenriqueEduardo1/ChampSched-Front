@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -6,20 +6,21 @@ import {
     Typography,
     TextField,
     Button,
-    List,
-    ListItem,
-    ListItemText,
-    IconButton,
     CircularProgress,
     Alert,
     Paper,
     Divider,
-    Grid
+    Grid,
+    Select,
+    MenuItem,
+    InputLabel,
+    FormControl,
+    Chip,
+    OutlinedInput
 } from '@mui/material';
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import type { SelectChangeEvent } from '@mui/material';
 import { MainToolbar } from '../components/main-toolbar';
-// import { getUsers } from '../services/user'; // Importa o serviço
-import { getUserById } from '../services/user';
+import { getUsers } from '../services/user'; // Importa o serviço
 import { createTime } from '../services/time'; // Importa o serviço
 import type { UserType } from '../types/user';
 import type { CreateTimeData } from '../types/time';
@@ -32,44 +33,40 @@ export function AddTimePage() {
     const [timeContato, setTimeContato] = useState('');
 
     // --- Estados da Lógica de Integrantes ---
-    const [userIdInput, setUserIdInput] = useState(''); // O valor do TextField
-    const [isLookingUp, setIsLookingUp] = useState(false); // Loading do botão "Buscar"
-    const [lookupError, setLookupError] = useState<string | null>(null);
+    const [allUsers, setAllUsers] = useState<UserType[]>([]);
     const [selectedIntegrantes, setSelectedIntegrantes] = useState<UserType[]>([]);
 
     // --- Estados de Controle ---
+    const [isLoadingPage, setIsLoadingPage] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const handleLookupUser = async () => {
-        const id = Number(userIdInput);
-        if (isNaN(id)) {
-            setLookupError('ID inválido. Digite apenas números.');
-            return;
-        }
+    useEffect(() => {
+        const fetchAllUsers = async () => {
+            try {
+                setIsLoadingPage(true);
+                setError(null);
+                const usersData = await getUsers();
+                setAllUsers(usersData);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Falha ao carregar usuários');
+            } finally {
+                setIsLoadingPage(false);
+            }
+        };
+        fetchAllUsers();
+    }, []);
 
-        if (selectedIntegrantes.some(user => user.id === id)) {
-            setLookupError('Este usuário já foi adicionado.');
-            return;
-        }
+    // --- Handlers ---
+    const handleUsersChange = (event: SelectChangeEvent<number[]>) => {
+        const {
+            target: { value },
+        } = event;
 
-        setIsLookingUp(true);
-        setLookupError(null);
-
-        try {
-            const foundUser = await getUserById(id);
-
-            setSelectedIntegrantes(prev => [...prev, foundUser]);
-            setUserIdInput(''); // Limpa o campo de input
-        } catch (err) {
-            setLookupError(err instanceof Error ? err.message : 'Usuário não encontrado');
-        } finally {
-            setIsLookingUp(false);
-        }
-    };
-
-    const handleRemoveIntegrante = (userId: number) => {
-        setSelectedIntegrantes(prev => prev.filter(user => user.id !== userId));
+        const selectedIds = value as number[];
+        
+        const selectedUsers = allUsers.filter(user => selectedIds.includes(user.id));
+        setSelectedIntegrantes(selectedUsers);
     };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -84,6 +81,7 @@ export function AddTimePage() {
 
         setIsSaving(true);
 
+        // Prepara os dados para a API (conforme a documentação)
         const dataToAPI: CreateTimeData = {
             nome: timeName,
             contato: timeContato || undefined, // Envia 'undefined' se estiver vazio
@@ -100,6 +98,14 @@ export function AddTimePage() {
             setIsSaving(false);
         }
     };
+
+    if (isLoadingPage) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
     
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -128,7 +134,7 @@ export function AddTimePage() {
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 fullWidth
-                                label="Contato do Time (Email ou Telefone)"
+                                label="Contato do Time"
                                 name="timeContato"
                                 value={timeContato}
                                 onChange={(e) => setTimeContato(e.target.value)}
@@ -139,54 +145,39 @@ export function AddTimePage() {
                         <Grid item xs={12}><Divider sx={{ my: 2 }} /></Grid>
 
                         <Grid item xs={12}>
-                            <Typography variant="h6">2. Adicionar Integrantes (MVP)</Typography>
+                            <Typography variant="h6">Integrantes do Time</Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                Digite o ID do usuário para adicioná-lo ao time.
+                                Convide usuários a entrarem no time. Nesta versão, convites serão aceitos instantaneamente.
                             </Typography>
                         </Grid>
                         <Grid item xs={12} md={6}>
-                            <Typography gutterBottom>Adicionar por ID de Usuário:</Typography>
-                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
-                                <TextField
+                            <FormControl fullWidth>
+                                <InputLabel id="users-label">Integrantes</InputLabel>
+                                <Select
+                                    labelId="users-label"
+                                    multiple
                                     fullWidth
-                                    label="ID do Usuário"
-                                    value={userIdInput}
-                                    onChange={(e) => {
-                                        setUserIdInput(e.target.value);
-                                        setLookupError(null); // Limpa o erro ao digitar
-                                    }}
-                                    disabled={isSaving || isLookingUp}
-                                    error={!!lookupError}
-                                    helperText={lookupError}
-                                />
-                                <Button
-                                    variant="outlined"
-                                    onClick={handleLookupUser}
-                                    disabled={isLookingUp || !userIdInput}
-                                    sx={{ flexShrink: 0, height: '56px' }}
+                                    value={selectedIntegrantes.map(user => user.id)}
+                                    onChange={handleUsersChange}
+                                    input={<OutlinedInput label="Integrantes" />}
+                                    renderValue={(selectedIds) => (
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                            {selectedIds.map((id) => {
+                                                const user = allUsers.find(u => u.id === id);
+                                                return (
+                                                    <Chip key={id} label={user?.nome || `Usuário ${id}`} />
+                                                );
+                                            })}
+                                        </Box>
+                                    )}
                                 >
-                                    {isLookingUp ? <CircularProgress size={24} /> : 'Adicionar'}
-                                </Button>
-                            </Box>
-                        </Grid>
-                        
-                        <Grid item xs={12} md={6}>
-                            <Typography gutterBottom>Integrantes Selecionados ({selectedIntegrantes.length}):</Typography>
-                            {selectedIntegrantes.length === 0 ? (
-                                <Typography variant="body2" color="text.secondary">Nenhum integrante selecionado.</Typography>
-                            ) : (
-                                <List dense sx={{ maxHeight: 200, overflowY: 'auto', border: '1px solid #ccc', borderRadius: 1 }}>
-                                    {selectedIntegrantes.map(user => (
-                                        <ListItem key={user.id} secondaryAction={
-                                            <IconButton edge="end" color="error" onClick={() => handleRemoveIntegrante(user.id)}>
-                                                <RemoveCircleIcon />
-                                            </IconButton>
-                                        }>
-                                            <ListItemText primary={user.nome} secondary={`ID: ${user.id} (${user.contato})`} />
-                                        </ListItem>
+                                    {allUsers.map((user) => (
+                                        <MenuItem key={user.id} value={user.id}>
+                                            {user.nome}
+                                        </MenuItem>
                                     ))}
-                                </List>
-                            )}
+                                </Select>
+                            </FormControl>
                         </Grid>
 
                         <Grid item xs={12}><Divider sx={{ my: 2 }} /></Grid>
