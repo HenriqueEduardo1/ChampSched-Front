@@ -21,8 +21,24 @@ export async function getCampeonatos(): Promise<CampeonatoType[]> {
     return handleResponse(response);
 };
 
-export async function getCampeonatosById(id: number): Promise<CampeonatoType> {
+export async function getCampeonatoById(id: number): Promise<CampeonatoType> {
     const response = await fetch(`${CAMP_API_URL}/${id}`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+};
+
+export async function getCampeonatosByUserId(userId: number): Promise<CampeonatoType[]> {
+    const response = await fetch(`${API_BASE_URL}/users/${userId}/campeonatos`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+};
+
+export async function getCampeonatosByOwnerId(userId: number): Promise<CampeonatoType[]> {
+    const response = await fetch(`${API_BASE_URL}/users/${userId}/campeonatos-organizados`, {
         method: 'GET',
         headers: getAuthHeaders(),
     });
@@ -38,6 +54,22 @@ export async function updateCampeonato(id: number, userData: UpdateCampeonatoDat
     return handleResponse(response);
 };
 
+export async function addTimeToCampeonato(campeonatoId: number, timeId: number): Promise<CampeonatoType> {
+    const response = await fetch(`${CAMP_API_URL}/${campeonatoId}/times/${timeId}`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ timeId }),
+    });
+    return handleResponse(response);
+}
+
+export async function removeTimeFromCampeonato(campeonatoId: number, timeId: number): Promise<CampeonatoType> {
+    const response = await fetch(`${CAMP_API_URL}/${campeonatoId}/times/${timeId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+};
 
 export async function deleteCampeonato(id: number): Promise<void> {
     const response = await fetch(`${CAMP_API_URL}/${id}`, {
