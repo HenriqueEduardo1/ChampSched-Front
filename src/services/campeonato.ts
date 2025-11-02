@@ -4,13 +4,7 @@ import { API_BASE_URL, getAuthHeaders, handleResponse } from './api';
 // Define a URL específica para este "módulo" (campeonatos)
 const CAMP_API_URL = `${API_BASE_URL}/campeonatos`;
 
-// --- Funções CRUD ---
-
-/**
- * C - CREATE
- * Cria um novo campeonato
- */
-export const createCampeonato = async (userData: CreateCampeonatoData): Promise<CampeonatoType> => {
+export async function createCampeonato(userData: CreateCampeonatoData): Promise<CampeonatoType> {
     const response = await fetch(CAMP_API_URL, {
         method: 'POST',
         headers: getAuthHeaders(),
@@ -19,11 +13,7 @@ export const createCampeonato = async (userData: CreateCampeonatoData): Promise<
     return handleResponse(response);
 };
 
-/**
- * R - READ (All)
- * Busca todos os campeonatos
- */
-export const getCampeonatos = async (): Promise<CampeonatoType[]> => {
+export async function getCampeonatos(): Promise<CampeonatoType[]> {
     const response = await fetch(CAMP_API_URL, {
         method: 'GET',
         headers: getAuthHeaders(),
@@ -31,11 +21,7 @@ export const getCampeonatos = async (): Promise<CampeonatoType[]> => {
     return handleResponse(response);
 };
 
-/**
- * R - READ (One)
- * Busca um campeonato pelo ID
- */
-export const getCampeonatosById = async (id: number): Promise<CampeonatoType> => {
+export async function getCampeonatosById(id: number): Promise<CampeonatoType> {
     const response = await fetch(`${CAMP_API_URL}/${id}`, {
         method: 'GET',
         headers: getAuthHeaders(),
@@ -43,11 +29,7 @@ export const getCampeonatosById = async (id: number): Promise<CampeonatoType> =>
     return handleResponse(response);
 };
 
-/**
- * U - UPDATE
- * Atualiza um campeonato existente
- */
-export const updateCampeonato = async (id: number, userData: UpdateCampeonatoData): Promise<CampeonatoType> => {
+export async function updateCampeonato(id: number, userData: UpdateCampeonatoData): Promise<CampeonatoType> {
     const response = await fetch(`${CAMP_API_URL}/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
@@ -56,14 +38,11 @@ export const updateCampeonato = async (id: number, userData: UpdateCampeonatoDat
     return handleResponse(response);
 };
 
-/**
- * D - DELETE
- * Deleta um campeonato
- */
-export const deleteCampeonato = async (id: number): Promise<void> => {
+
+export async function deleteCampeonato(id: number): Promise<void> {
     const response = await fetch(`${CAMP_API_URL}/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
     });
-    await handleResponse(response); // Retorna null se for sucesso (204)
+    await handleResponse(response); 
 };

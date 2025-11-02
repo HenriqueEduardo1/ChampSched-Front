@@ -7,6 +7,7 @@ import { LoginPage } from './pages/LoginPage';
 import { AddUserPage } from './pages/AddUserPage';
 import { PerfilPage } from './pages/PerfilPage';
 import { CampeonatosPage } from './pages/CampeonatosPage';
+import { CampeonatoDetailPage } from './pages/CampeonatosPage/CampeonatoDetailPage';
 import { TimesPage } from './pages/TimesPage';
 
 import { ProtectedLayout } from './components/ProtectedLayout';
@@ -35,6 +36,11 @@ const router = createBrowserRouter([
     {
         path: "/campeonatos",
         element: <CampeonatosPage />
+    },
+
+    {
+        path: "/campeonatos/:id",
+        element: <CampeonatoDetailPage />
     },
 
     // --- Rotas Privadas ---

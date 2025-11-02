@@ -8,6 +8,10 @@ import {
     Alert,
     Card,
     CardContent,
+    List,
+    ListItem,
+    ListItemText,
+    Divider,
     Button,
 } from '@mui/material';
 import { MainToolbar } from '../../../components/main-toolbar';
@@ -72,10 +76,6 @@ export function TimeDetailPage() {
             return <Alert severity="info" sx={{ mt: 2 }}>Time não encontrado.</Alert>;
         }
 
-        const names = time.integrantes && time.integrantes.length > 0
-            ? time.integrantes.map(user => user.nome).join(', ')
-            : 'Não informado';
-
         return (
             <Card sx={{ mt: 2 }}>
                 <CardContent>
@@ -85,9 +85,24 @@ export function TimeDetailPage() {
                     <Typography variant="h6" color="text.secondary">
                         Contato: {time.contato || 'Não informado'}
                     </Typography>
-                    <Typography variant="h6" color="text.secondary">
-                        Integrantes: {names || 'Não informado'}
-                    </Typography>
+
+                    <Typography variant="h6" sx={{ mt: 2 }}>Participantes</Typography>
+                    <List>
+                        {time.integrantes && time.integrantes.length > 0 ? (
+                            time.integrantes.map((user) => (
+                                <Box key={user.id}>
+                                    <ListItem>
+                                        <ListItemText primary={user.nome} secondary={user.email || undefined} />
+                                    </ListItem>
+                                    <Divider component="li" />
+                                </Box>
+                            ))
+                        ) : (
+                            <ListItem>
+                                <ListItemText primary="Nenhum participante registrado" />
+                            </ListItem>
+                        )}
+                    </List>
                 </CardContent>
             </Card>
         );
@@ -97,8 +112,8 @@ export function TimeDetailPage() {
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <MainToolbar />
             <Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                <Typography>
-                    {isLoading ? 'Carregando...' : (time?.nome || 'Detalhes')}
+                <Typography variant="h4" component="h1" gutterBottom>
+                    {isLoading ? 'Carregando...' : 'Detalhes'}
                 </Typography>
                 {renderContent()}
                 <Button
