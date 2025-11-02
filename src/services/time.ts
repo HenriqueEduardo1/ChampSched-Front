@@ -43,6 +43,14 @@ export async function getTimeById(id: number): Promise<TimeType> {
     return handleResponse(response);
 };
 
+export async function getTimesByUserId(userId: number): Promise<TimeType[]> {
+    const response = await fetch(`${API_BASE_URL}/users/${userId}/times`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+};
+
 /**
  * U - UPDATE
  * Atualiza um time existente
