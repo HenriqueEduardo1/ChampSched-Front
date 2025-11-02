@@ -8,17 +8,13 @@ import {
     handleResponse
 } from './api';
 
-// URL base para os endpoints de autenticação
-const AUTH_API_URL = `${API_BASE_URL}/auth`;
-
 /**
  * Protótipo da Função de Login
  * Envia credenciais, recebe um token e dados do usuário.
  */
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    // Simulação (remover isso quando o backend estiver pronto)
     if (credentials.username === 'admin' && credentials.password === '123') {
-        const fakeResponse: AuthResponse = {
+        const data: AuthResponse = {
             token: 'fake-jwt-token-from-login-123',
             user: {
                 id: 1,
@@ -29,15 +25,11 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
                 organizador: true
             }
         };
-        // Salva o token simulado
-        localStorage.setItem('authToken', fakeResponse.token);
-        return fakeResponse;
-    } else {
-        throw new Error('Usuário ou senha inválidos (simulação)');
+        localStorage.setItem('authToken', data.token);
+        return data;
     }
-
-    /* // ---- CÓDIGO REAL (quando o backend estiver pronto) ----
-    const response = await fetch(`${AUTH_API_URL}/login`, {
+    // Chamada real à API
+    const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: getPublicHeaders(), // Login é uma chamada pública
         body: JSON.stringify(credentials),
@@ -49,9 +41,7 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
     if (data.token) {
         localStorage.setItem('authToken', data.token);
     }
-    
     return data;
-    */
 };
 
 /**
@@ -61,19 +51,17 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
  * Envia dados do novo usuário, recebe o usuário criado e um token.
  */
 export const register = async (userData: CreateUserData): Promise<AuthResponse> => {
-    const response = await fetch(`${AUTH_API_URL}/register`, {
+    const response = await fetch(`${API_BASE_URL}/users`, {
         method: 'POST',
-        headers: getPublicHeaders(), // Registro é uma chamada pública
+        headers: getPublicHeaders(),
         body: JSON.stringify(userData),
     });
     
     const data: AuthResponse = await handleResponse(response);
 
-    // Se o registro for bem-sucedido, já faz o login
     if (data.token) {
         localStorage.setItem('authToken', data.token);
     }
-
     return data;
 };
 
@@ -85,8 +73,6 @@ export const register = async (userData: CreateUserData): Promise<AuthResponse> 
  */
 export const logout = (): void => {
     localStorage.removeItem('authToken');
-    // Forçar um recarregamento da página para ir ao /login
-    // window.location.href = '/login';
 };
 
 /**
@@ -94,9 +80,9 @@ export const logout = (): void => {
  * Usa o token salvo para buscar os dados do usuário logado.
  */
 export const getMe = async (): Promise<UserType> => {
-    const token = localStorage.getItem('authToken'); // Simulação (remover depois)
+
+    const token = localStorage.getItem('authToken');
     if (token === 'fake-jwt-token-from-login-123') {
-        console.warn("SIMULAÇÃO: Retornando usuário 'admin' para getMe()");
         const fakeUser: UserType = {
             id: 1,
             nome: 'Admin (Simulado)',
@@ -105,13 +91,13 @@ export const getMe = async (): Promise<UserType> => {
             contato: '999999999',
             organizador: true
         };
-        // Retorna o usuário falso após um pequeno atraso
-        return new Promise(resolve => setTimeout(() => resolve(fakeUser), 500));
+        return new Promise(resolve => setTimeout(() => resolve(fakeUser), 300));
     }
 
-    const response = await fetch(`${API_BASE_URL}/users/me`, { // Endpoint comum para "quem sou eu"
+    // Chamada real à API
+    const response = await fetch(`${API_BASE_URL}/users/me`, {
         method: 'GET',
-        headers: getAuthHeaders(), // Esta chamada é AUTENTICADA
+        headers: getAuthHeaders(),
     });
     
     return handleResponse(response);

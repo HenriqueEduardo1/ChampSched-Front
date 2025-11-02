@@ -1,13 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, Card, CardContent, CardHeader, TextField, Box } from '@mui/material';
 import { useState } from 'react';
-import { login } from '../../services/auth';
+import { useAuth } from '../../contexts/AuthContext';
 
 export const LoginPage = () => {
     const navigate = useNavigate();
     const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
+    const { login } = useAuth();
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const form = event.currentTarget;
         const formData = new FormData(form);
@@ -28,7 +29,7 @@ export const LoginPage = () => {
             return; // Não continua para a lógica de login
         }
 
-        login({ username, password })
+        await login({ username, password })
             .then(() => {
                 navigate('/');
             })

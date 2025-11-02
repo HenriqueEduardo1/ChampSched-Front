@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { FormEvent, ChangeEvent } from "react";
 import { useNavigate } from 'react-router-dom';
 import type { CreateUserData } from '../../types/user';
-import { register } from "../../services/auth";
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ValidationErrorInterface {
     nome?: string;
@@ -37,6 +37,7 @@ export const AddUserPage = () => {
     });
     const [errors, setErrors] = useState<ValidationErrorInterface>({});
     const navigate = useNavigate();
+    const { register } = useAuth();
     const [loading, setLoading] = useState(false);
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {

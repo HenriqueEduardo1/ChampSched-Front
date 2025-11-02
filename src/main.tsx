@@ -11,8 +11,10 @@ import { CampeonatoDetailPage } from './pages/CampeonatosPage/CampeonatoDetailPa
 import { TimesPage } from './pages/TimesPage';
 
 import { ProtectedLayout } from './components/ProtectedLayout';
+import { AuthProvider } from './contexts/AuthContext';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import { TimeDetailPage } from './pages/TimesPage/TimeDetailPage';
+import { AddTimePage } from './AddTimePage';
 
 const theme = createTheme({
     palette: {
@@ -63,6 +65,10 @@ const router = createBrowserRouter([
             {
                 path: "/times/:id",
                 element: <TimeDetailPage />
+            },
+            {
+                path: "/times/novo",
+                element: <AddTimePage />
             }
         ]
     },
@@ -70,9 +76,11 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <RouterProvider router={router} />
-        </ThemeProvider>
+        <AuthProvider>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <RouterProvider router={router} />
+            </ThemeProvider>
+        </AuthProvider>
     </StrictMode>,
 )

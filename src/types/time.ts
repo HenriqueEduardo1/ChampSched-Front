@@ -7,6 +7,10 @@ export interface TimeType {
     integrantes: UserType[];
 }
 
-export type CreateTimeData = Omit<TimeType, 'id'>;
+export interface CreateTimeData {
+    nome: string;
+    contato?: string;
+    integrantesIds: number[];
+}
 
 export type UpdateTimeData = Partial<CreateTimeData>;
