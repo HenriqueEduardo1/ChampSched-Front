@@ -10,6 +10,7 @@ import {
     TextField,
     Card,
     CardContent,
+    CardActions,
     Typography,
     Grid,
     Alert,
@@ -22,6 +23,7 @@ import {
     OutlinedInput,
     CircularProgress,
 } from "@mui/material";
+import { Link } from 'react-router-dom';
 import type { SelectChangeEvent } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { MainToolbar } from "../../components/main-toolbar";
@@ -37,6 +39,7 @@ export const CampeonatosPage = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [organizadorId, setOrganizadorId] = useState<number | null>(null);
     const [snackbar, setSnackbar] = useState<{
         open: boolean;
@@ -59,6 +62,7 @@ export const CampeonatosPage = () => {
     useEffect(() => {
         const init = async () => {
             setIsLoading(true);
+            setError(null);
             await Promise.all([loadCampeonatos(), loadTimes(), loadOrganizadorId()]);
             setIsLoading(false);
         };
@@ -70,8 +74,9 @@ export const CampeonatosPage = () => {
         try {
             const data = await getCampeonatos();
             setCampeonatos(data);
-        } catch (error) {
-            showSnackbar("Erro ao carregar campeonatos", "error");
+        } catch (err) {
+            const message = err instanceof Error ? err.message : 'Erro ao carregar campeonatos';
+            setError(message);
         }
     };
 
@@ -79,8 +84,9 @@ export const CampeonatosPage = () => {
         try {
             const data = await getTimes();
             setTimes(data);
-        } catch (error) {
-            showSnackbar("Erro ao carregar times", "error");
+        } catch (err) {
+            const message = err instanceof Error ? err.message : 'Erro ao carregar times';
+            setError(message);
         }
     };
 
@@ -89,8 +95,9 @@ export const CampeonatosPage = () => {
             const user = await getMe();
             setOrganizadorId(user.id);
             setFormData(prev => ({ ...prev, organizadorId: user.id }));
-        } catch (error) {
-            showSnackbar("Erro ao carregar dados do usuário", "error");
+        } catch (err) {
+            const message = err instanceof Error ? err.message : 'Erro ao carregar dados do usuário';
+            setError(message);
         }
     };
 
@@ -130,6 +137,7 @@ export const CampeonatosPage = () => {
     };
 
     const handleSubmit = async () => {
+        setError(null);
 
         if (!formData.nome || !formData.esporte || !formData.data) {
             showSnackbar("Por favor, preencha todos os campos obrigatórios", "error");
@@ -188,6 +196,8 @@ export const CampeonatosPage = () => {
                     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
                         <CircularProgress />
                     </Box>
+                ) : error ? (
+                    <Alert severity="error">{error}</Alert>
                 ) : campeonatos.length === 0 ? (
                     <Alert severity="info">
                         Nenhum campeonato cadastrado. Crie seu primeiro campeonato!
@@ -226,6 +236,11 @@ export const CampeonatosPage = () => {
                                             </Box>
                                         </Box>
                                     </CardContent>
+                                    <CardActions>
+                                        <Button size="small" component={Link} to={`/campeonatos/${campeonato.id}`}>
+                                            Ver detalhes
+                                        </Button>
+                                    </CardActions>
                                 </Card>
                             </Grid>
                         ))}
