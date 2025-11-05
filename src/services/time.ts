@@ -75,3 +75,20 @@ export async function deleteTime(id: number): Promise<void> {
     });
     await handleResponse(response); // Retorna null se for sucesso (204)
 };
+
+export async function removeIntegranteFromTime(timeId: number, userId: number): Promise<TimeType> {
+    const response = await fetch(`${TIME_API_URL}/${timeId}/integrantes/${userId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+    });
+    return handleResponse(response);
+};
+
+export async function addIntegranteToTime(timeId: number, userId: number): Promise<TimeType> {
+    const response = await fetch(`${TIME_API_URL}/${timeId}/integrantes/${userId}`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ userId }),
+    });
+    return handleResponse(response);
+};

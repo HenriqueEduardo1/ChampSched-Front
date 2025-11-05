@@ -21,7 +21,10 @@ const theme = createTheme({
         mode: 'light',
         primary: {
         main: '#134686',
-        }
+        },
+        secondary: {
+        main: '#d78005ff',
+        },
     },
 });
 
