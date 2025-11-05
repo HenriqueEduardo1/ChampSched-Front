@@ -84,7 +84,7 @@ export const getMe = async (): Promise<UserType> => {
     const token = localStorage.getItem('authToken');
     if (token === 'fake-jwt-token-from-login-123') {
         const fakeUser: UserType = {
-            id: 1,
+            id: 2,
             nome: 'Admin (Simulado)',
             username: 'admin',
             email: 'admin@chamsched.com',

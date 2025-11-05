@@ -123,7 +123,7 @@ export function TimesPage() {
                     component={Link}
                     to="/times/novo"
                 >
-                    Adicionar Novo Time
+                    Criar Novo Time
                 </Button>
                 <TextField
                     label="Buscar Time por Nome"

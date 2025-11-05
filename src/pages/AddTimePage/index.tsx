@@ -16,40 +16,41 @@ import {
     InputLabel,
     FormControl,
     Chip,
-    OutlinedInput
+    OutlinedInput,
+    Snackbar
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
-import { MainToolbar } from '../components/main-toolbar';
-import { getUsers } from '../services/user'; // Importa o serviço
-import { createTime } from '../services/time'; // Importa o serviço
-import type { UserType } from '../types/user';
-import type { CreateTimeData } from '../types/time';
+import { MainToolbar } from '../../components/main-toolbar';
+import { getUsers } from '../../services/user'; // Importa o serviço
+import { createTime } from '../../services/time'; // Importa o serviço
+import type { UserType } from '../../types/user';
+import type { CreateTimeData } from '../../types/time';
 
 export function AddTimePage() {
     const navigate = useNavigate();
 
-    // --- Estados do Formulário ---
     const [timeName, setTimeName] = useState('');
     const [timeContato, setTimeContato] = useState('');
 
-    // --- Estados da Lógica de Integrantes ---
     const [allUsers, setAllUsers] = useState<UserType[]>([]);
     const [selectedIntegrantes, setSelectedIntegrantes] = useState<UserType[]>([]);
 
-    // --- Estados de Controle ---
     const [isLoadingPage, setIsLoadingPage] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+            open: false,
+            message: '',
+            severity: 'success',
+        });
 
     useEffect(() => {
         const fetchAllUsers = async () => {
             try {
                 setIsLoadingPage(true);
-                setError(null);
                 const usersData = await getUsers();
                 setAllUsers(usersData);
             } catch (err) {
-                setError(err instanceof Error ? err.message : 'Falha ao carregar usuários');
+                showSnackbar(err instanceof Error ? err.message : 'Erro ao buscar usuários', 'error');
             } finally {
                 setIsLoadingPage(false);
             }
@@ -57,7 +58,6 @@ export function AddTimePage() {
         fetchAllUsers();
     }, []);
 
-    // --- Handlers ---
     const handleUsersChange = (event: SelectChangeEvent<number[]>) => {
         const {
             target: { value },
@@ -71,11 +71,10 @@ export function AddTimePage() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        setError(null);
 
         // Validação simples
         if (!timeName) {
-            setError('O nome do time é obrigatório.');
+            showSnackbar('O nome do time é obrigatório.', 'error');
             return;
         }
 
@@ -90,13 +89,19 @@ export function AddTimePage() {
 
         try {
             await createTime(dataToAPI);
-            alert('Time criado com sucesso!');
-            navigate('/times'); // Redireciona para a lista de times
+            showSnackbar('Time criado com sucesso!', 'success');
+            setTimeout(() => {
+                navigate('/times'); // Redireciona para a lista de times
+            }, 2000);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Erro ao criar o time');
+            showSnackbar(err instanceof Error ? err.message : 'Erro ao criar time', 'error');
         } finally {
             setIsSaving(false);
         }
+    };
+
+    const showSnackbar = (message: string, severity: "success" | "error") => {
+        setSnackbar({ open: true, message, severity });
     };
 
     if (isLoadingPage) {
@@ -183,9 +188,6 @@ export function AddTimePage() {
                         <Grid item xs={12}><Divider sx={{ my: 2 }} /></Grid>
 
                         <Grid item xs={12}>
-                            {error && (
-                                <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
-                            )}
                             <Button
                                 type="submit"
                                 variant="contained"
@@ -198,6 +200,20 @@ export function AddTimePage() {
                         </Grid>
                     </Grid>
                 </Paper>
+                <Snackbar
+                    open={snackbar.open}
+                    autoHideDuration={6000}
+                    onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                >
+                    <Alert
+                        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+                        severity={snackbar.severity}
+                        sx={{ width: '100%' }}
+                    >
+                        {snackbar.message}
+                    </Alert>
+                </Snackbar>
             </Container>
         </Box>
     );

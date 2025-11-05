@@ -38,7 +38,11 @@ export function TimeDetailPage() {
     const [allUsers, setAllUsers] = useState<UserType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ open: false, message: '', severity: 'success' });
+    const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+        open: false,
+        message: '',
+        severity: 'success'
+    });
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [userToRemove, setUserToRemove] = useState<number | null>(null);
@@ -74,7 +78,7 @@ export function TimeDetailPage() {
                     getUsers() // Busca todos os usuários
                 ]);
                 
-                setTime(timeData); 
+                setTime(timeData);
                 setAllUsers(allUsersData); // Salva todos os usuários
 
             } catch (err) {

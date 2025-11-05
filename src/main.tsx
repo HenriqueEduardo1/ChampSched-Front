@@ -14,7 +14,8 @@ import { ProtectedLayout } from './components/ProtectedLayout';
 import { AuthProvider } from './contexts/AuthContext';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import { TimeDetailPage } from './pages/TimesPage/TimeDetailPage';
-import { AddTimePage } from './AddTimePage';
+import { AddTimePage } from './pages/AddTimePage';
+import { ManageCampeonatoPage } from './pages/CampeonatosPage/CampeonatoDetailPage/ManageCampeonatoPage';
 
 const theme = createTheme({
     palette: {
@@ -72,7 +73,11 @@ const router = createBrowserRouter([
             {
                 path: "/times/novo",
                 element: <AddTimePage />
-            }
+            },
+            {
+                path: "/campeonatos/:id/manage",
+                element: <ManageCampeonatoPage />
+            },
         ]
     },
 ]);
