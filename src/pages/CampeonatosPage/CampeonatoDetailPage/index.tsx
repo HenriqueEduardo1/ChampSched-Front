@@ -256,7 +256,7 @@ export function CampeonatoDetailPage() {
                             <Button
                                 variant='contained'
                                 color='secondary'
-                                onClick={() => navigate(`/campeonatos/${campeonato.id}/manage`)}
+                                onClick={() => navigate(`/campeonatos/${campeonato.id}/gerenciar`)}
                                 disabled={!isOrganizer}
                                 sx={{maxWidth: 400}}
                             >

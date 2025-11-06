@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useParams, useNavigate} from 'react-router-dom';
 import {
     Box,
     Container,
@@ -9,8 +9,6 @@ import {
     CardContent,
     CircularProgress,
     Alert,
-    Breadcrumbs,
-    Link,
     Paper,
     Divider,
     Button
@@ -89,21 +87,6 @@ export function ManageCampeonatoPage() {
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <MainToolbar />
             <Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-                
-                {/* Navegação (Migalhas de pão) */}
-                <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 2 }}>
-                    <Link component={RouterLink} underline="hover" color="inherit" to="/">
-                        Home
-                    </Link>
-                    <Link component={RouterLink} underline="hover" color="inherit" to="/campeonatos">
-                        Campeonatos
-                    </Link>
-                    <Link component={RouterLink} underline="hover" color="inherit" to={`/campeonatos/${id}`}>
-                        {campeonato.nome}
-                    </Link>
-                    <Typography color="text.primary">Gerenciar</Typography>
-                </Breadcrumbs>
-
                 <Typography variant="h4" component="h1" gutterBottom>
                     Gerenciar: {campeonato.nome}
                 </Typography>
@@ -129,7 +112,6 @@ export function ManageCampeonatoPage() {
                                             Integrantes: {time.integrantesIds.length}
                                         </Typography>
                                     </CardContent>
-                                    {/* Ver partidas */}
                                 </Card>
                             </Grid>
                         ))
@@ -150,6 +132,11 @@ export function ManageCampeonatoPage() {
                         (Em breve: A ferramenta de criação de chaveamento aparecerá aqui)
                     </Typography>
                 </Paper>
+                <Button
+                variant='contained'
+                onClick={() => navigate(-1)}
+                sx={{ mt: 2 }}>Voltar
+                </Button>
             </Container>
         </Box>
     );

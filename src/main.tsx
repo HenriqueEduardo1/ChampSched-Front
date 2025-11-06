@@ -75,7 +75,7 @@ const router = createBrowserRouter([
                 element: <AddTimePage />
             },
             {
-                path: "/campeonatos/:id/manage",
+                path: "/campeonatos/:id/gerenciar",
                 element: <ManageCampeonatoPage />
             },
         ]
