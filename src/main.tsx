@@ -20,12 +20,59 @@ import { ManageCampeonatoPage } from './pages/CampeonatosPage/CampeonatoDetailPa
 const theme = createTheme({
     palette: {
         mode: 'light',
+        
+        // Suas cores existentes
         primary: {
-        main: '#134686',
+            main: '#134686', // Seu azul
         },
         secondary: {
-        main: '#d78005ff',
+            main: '#d78005', // Seu laranja (removi o 'ff' do alfa)
         },
+
+        // --- Novas Paletas de Intenção ---
+
+        /**
+         * Vermelho para erros, validações, botões de "deletar".
+         */
+        error: {
+            main: '#d32f2f', // Um vermelho padrão do MUI
+        },
+        /**
+         * Laranja/Amarelo para avisos e alertas.
+         */
+        warning: {
+            main: '#ed6c02', // Um laranja padrão do MUI
+        },
+        /**
+         * Azul claro para caixas de informação.
+         */
+        info: {
+            main: '#0288d1', // Um azul claro padrão do MUI
+        },
+        /**
+         * Verde para mensagens de sucesso.
+         */
+        success: {
+            main: '#2e7d32', // Um verde padrão do MUI
+        },
+
+        // --- Novas Paletas de Fundo e Texto ---
+        
+        /**
+         * Define as cores de fundo da aplicação.
+         */
+        background: {
+            default: '#f4f6f8', // Um cinza muito claro para o fundo da página
+            paper: '#ffffff',   // Branco puro para Cards, Menus, etc.
+        },
+        
+        /**
+         * Define as cores padrão do texto.
+         */
+        text: {
+            primary: 'rgba(0, 0, 0, 0.87)', // Cor principal do texto
+            secondary: 'rgba(0, 0, 0, 0.6)', // Cor para textos secundários
+        }
     },
 });
 

@@ -44,7 +44,8 @@ export function TimeDetailPage() {
         severity: 'success'
     });
 
-    const [dialogOpen, setDialogOpen] = useState(false);
+    const [userDialogOpen, setUserDialogOpen] = useState(false);
+    const [timeDialogOpen, setTimeDialogOpen] = useState(false);
     const [userToRemove, setUserToRemove] = useState<number | null>(null);
     const [isSubmittingRemove, setIsSubmittingRemove] = useState(false);
 
@@ -95,9 +96,6 @@ export function TimeDetailPage() {
     const handleDeleteTime = async () => {
             if (!time) return;
 
-            const confirmed = window.confirm("Tem certeza que deseja excluir este time?");
-            if (!confirmed) return;
-
             try {
                 setIsLoading(true);
                 setError(null);
@@ -139,14 +137,22 @@ export function TimeDetailPage() {
         }
     };
 
-    const handleOpenConfirmDialog = (userId: number) => {
-        setUserToRemove(userId); // Guarda quem deve ser removido
-        setDialogOpen(true);     // Abre o dialog
+    const handleOpenTimeDialog = () => {
+        setTimeDialogOpen(true);
     };
 
-    const handleCloseDialog = () => {
+    const handleCloseTimeDialog = () => {
+        setTimeDialogOpen(false);
+    };
+
+    const handleOpenConfirmUserDialog = (userId: number) => {
+        setUserToRemove(userId); // Guarda quem deve ser removido
+        setUserDialogOpen(true); // Abre o dialog
+    };
+
+    const handleCloseUserDialog = () => {
         setUserToRemove(null);
-        setDialogOpen(false);
+        setUserDialogOpen(false);
     };
 
     const handleOpenAddDialog = () => {
@@ -181,7 +187,7 @@ export function TimeDetailPage() {
         if (userToRemove !== null) {
             await handleRemoveIntegrante(userToRemove); // Chama a função de API
         }
-        handleCloseDialog(); // Fecha o dialog
+        handleCloseUserDialog(); // Fecha o dialog
     };
 
     const renderContent = () => {
@@ -219,7 +225,7 @@ export function TimeDetailPage() {
                                     <ListItem
                                         // Adiciona o botão de remover
                                         secondaryAction={
-                                            <IconButton edge="end" aria-label="delete" onClick={() => handleOpenConfirmDialog(user.id)}>
+                                            <IconButton edge="end" aria-label="delete" onClick={() => handleOpenConfirmUserDialog(user.id)}>
                                                 <Delete />
                                             </IconButton>
                                         }
@@ -259,7 +265,7 @@ export function TimeDetailPage() {
                         variant="contained"
                         endIcon={<Delete />}
                         color="secondary"
-                        onClick={handleDeleteTime}
+                        onClick={handleOpenTimeDialog}
                         
                     >
                         Excluir Time
@@ -274,8 +280,8 @@ export function TimeDetailPage() {
                 </Stack>
             </Container>
             <Dialog
-                open={dialogOpen}
-                onClose={handleCloseDialog}
+                open={userDialogOpen}
+                onClose={handleCloseUserDialog}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
@@ -288,7 +294,7 @@ export function TimeDetailPage() {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDialog} disabled={isSubmittingRemove}>Cancelar</Button>
+                    <Button onClick={handleCloseUserDialog} disabled={isSubmittingRemove}>Cancelar</Button>
                     <Button onClick={handleConfirmRemove} color="error" autoFocus disabled={isSubmittingRemove}>
                         {isSubmittingRemove ? 'Removendo...' : 'Remover'}
                     </Button>
@@ -327,9 +333,30 @@ export function TimeDetailPage() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Dialog
+                open={timeDialogOpen}
+                onClose={handleCloseTimeDialog}
+                aria-labelledby="alert-dialog-title-time"
+                aria-describedby="alert-dialog-description-time"
+            >
+                <DialogTitle id="alert-dialog-title-time">
+                    Confirmar Exclusão do Time
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description-time">
+                        Tem certeza que deseja excluir este time? Esta ação não pode ser desfeita.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseTimeDialog} disabled={isLoading}>Cancelar</Button>
+                    <Button onClick={handleDeleteTime} color="error" autoFocus disabled={isLoading}>
+                        {isLoading ? 'Excluindo...' : 'Excluir'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <Snackbar
                 open={snackbar.open}
-                autoHideDuration={6000}
+                autoHideDuration={3000}
                 onClose={() => setSnackbar(prev => ({ ...prev!, open: false }))}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
