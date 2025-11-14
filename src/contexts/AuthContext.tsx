@@ -4,7 +4,6 @@ import { getMe, login as loginService, register as registerService } from '../se
 import type { UserType, CreateUserData } from '../types/user';
 import type { LoginCredentials } from '../types/auth';
 
-// 1. Define a "forma" do nosso contexto
 interface AuthContextState {
     isAuthenticated: boolean;
     user: UserType | null;
@@ -14,15 +13,12 @@ interface AuthContextState {
     logout: () => void;
 }
 
-// 2. Cria o Contexto (inicialmente nulo)
 const AuthContext = createContext<AuthContextState | undefined>(undefined);
 
-// 3. Cria o "Provedor" (o componente que fará a mágica)
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<UserType | null>(null);
     const [isLoading, setIsLoading] = useState(true); // Começa true para verificação inicial
 
-    // 4. Efeito de verificação: Roda UMA VEZ quando o app carrega
     useEffect(() => {
         const checkToken = async () => {
             const token = localStorage.getItem('authToken');
@@ -47,8 +43,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         checkToken();
     }, []); // O array vazio [] garante que isso rode só no início
 
-    // 5. Funções que os componentes poderão chamar
-
     const login = async (credentials: LoginCredentials) => {
         // Chama o serviço de API
         const { user } = await loginService(credentials);
@@ -69,7 +63,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Opcional: redirecionar via window.location.href = '/login'
     };
 
-    // 6. Monta o valor que será fornecido
     const value: AuthContextState = {
         isAuthenticated: !!user, // Verdadeiro se 'user' não for nulo
         user,
@@ -86,7 +79,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-// 7. Cria o Hook customizado (para facilitar o uso)
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (context === undefined) {

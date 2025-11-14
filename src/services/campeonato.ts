@@ -1,14 +1,13 @@
 import type { CampeonatoType, CreateCampeonatoData, UpdateCampeonatoData } from "../types/campeonato";
 import { API_BASE_URL, getAuthHeaders, handleResponse } from './api';
 
-// Define a URL específica para este "módulo" (campeonatos)
 const CAMP_API_URL = `${API_BASE_URL}/campeonatos`;
 
-export async function createCampeonato(userData: CreateCampeonatoData): Promise<CampeonatoType> {
+export async function createCampeonato(campData: CreateCampeonatoData): Promise<CampeonatoType> {
     const response = await fetch(CAMP_API_URL, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify(userData),
+        body: JSON.stringify(campData),
     });
     return handleResponse(response);
 };
