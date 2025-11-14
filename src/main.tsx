@@ -23,10 +23,10 @@ const theme = createTheme({
         
         // Suas cores existentes
         primary: {
-            main: '#134686', // Seu azul
+            main: '#134686',
         },
         secondary: {
-            main: '#d78005', // Seu laranja (removi o 'ff' do alfa)
+            main: '#d78005',
         },
 
         // --- Novas Paletas de Intenção ---
@@ -35,25 +35,25 @@ const theme = createTheme({
          * Vermelho para erros, validações, botões de "deletar".
          */
         error: {
-            main: '#d32f2f', // Um vermelho padrão do MUI
+            main: '#d32f2f',
         },
         /**
          * Laranja/Amarelo para avisos e alertas.
          */
         warning: {
-            main: '#ed6c02', // Um laranja padrão do MUI
+            main: '#ed6c02',
         },
         /**
          * Azul claro para caixas de informação.
          */
         info: {
-            main: '#0288d1', // Um azul claro padrão do MUI
+            main: '#0288d1',
         },
         /**
          * Verde para mensagens de sucesso.
          */
         success: {
-            main: '#2e7d32', // Um verde padrão do MUI
+            main: '#2e7d32',
         },
 
         // --- Novas Paletas de Fundo e Texto ---
