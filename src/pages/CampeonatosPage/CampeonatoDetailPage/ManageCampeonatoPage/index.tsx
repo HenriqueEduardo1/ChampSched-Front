@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';import { useParams, useNavigate} from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { useParams, useNavigate} from 'react-router-dom';
 import {
     Box,
     Container,
@@ -22,7 +23,7 @@ import type { CampeonatoType } from '../../../../types/campeonato';
 import { getMe } from '../../../../services/auth';
 import type { PartidaType } from '../../../../types/partida';
 import { deletePartidas, getPartidasByCampeonato } from '../../../../services/partida';
-import { createChaveamentoInCampeonato } from '../../../../services/chaveamento';
+import { createChaveamento } from '../../../../services/chaveamento';
 import { deleteCampeonato, getCampeonatoById } from '../../../../services/campeonato';
 import { PartidaCard } from '../../../../components/PartidaCard';
 import { Delete } from '@mui/icons-material';
@@ -38,9 +39,9 @@ export function ManageCampeonatoPage() {
     const [totalPartidas, setTotalPartidas] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [chaveDialogOpen, setChaveDialogOpen] = useState(false);
-    const [deletePartDialogOpen, setDeletePartDialogOpen] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const [chaveamentoDialog, setChaveamentoDialog] = useState(false);
+    const [deleteChaveDialog, setDeleteChaveDialog] = useState(false);
     const [snackbar, setSnackBar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' | 'info' }>({ open: false, message: '', severity: 'info' });
     const theme = useTheme();
 
@@ -87,7 +88,7 @@ export function ManageCampeonatoPage() {
        try {
             setIsLoading(true);
             setError(null);
-            const data = await createChaveamentoInCampeonato(Number(id));
+            const data = await createChaveamento(Number(id));
             setPartidas(data.partidas);
             setMessage(data.message);
             setTotalPartidas(data.totalPartidas);
@@ -151,27 +152,27 @@ export function ManageCampeonatoPage() {
     };
 
     const handleOpenChaveDialog = () => {
-        setChaveDialogOpen(true);
+        setChaveamentoDialog(true);
     };
 
     const handleCloseChaveDialog = () => {
-        setChaveDialogOpen(false);
+        setChaveamentoDialog(false);
     };
 
     const handleOpenDeleteDialog = () => {
-        setDeleteDialogOpen(true);
+        setDeleteDialog(true);
     };
 
     const handleCloseDeleteDialog = () => {
-        setDeleteDialogOpen(false);
+        setDeleteDialog(false);
     };
 
     const handleOpenDeleteChaveDialog = () => {
-        setDeletePartDialogOpen(true);
+        setDeleteChaveDialog(true);
     };
 
     const handleCloseDeleteChaveDialog = () => {
-        setDeletePartDialogOpen(false);
+        setDeleteChaveDialog(false);
     };
 
     const partidasPorFase = useMemo(() => {
@@ -235,10 +236,10 @@ export function ManageCampeonatoPage() {
                             flexDirection: 'row',
                             gap: 6, // Espaço entre as colunas (fases)
                             p: 2,
-                            overflow: 'auto', // Permite scroll horizontal se houver muitas fases
+                            overflow: 'auto',
                             minHeight: 300,
                             justifyContent: 'center',
-                            backgroundColor: theme.palette.grey[50], // Um fundo leve
+                            backgroundColor: theme.palette.grey[50],
                             borderRadius: 2,
                             border: `1px solid ${theme.palette.divider}`
                         }}
@@ -271,8 +272,13 @@ export function ManageCampeonatoPage() {
                     </Box>
                 {message && (
                     <Alert severity="info" sx={{ mt: 2 }}>
-                        {message} {totalPartidas !== null && `Total de partidas: ${totalPartidas}`}
+                        {message}
                     </Alert>
+                )}
+                {totalPartidas !== null && (
+                    <Typography variant="body1" sx={{ mt: 2 }}>
+                        Total de partidas: {totalPartidas}
+                    </Typography>
                 )}
                 <Divider sx={{ my: 4 }} />
                 <Stack spacing={2} direction="row">
@@ -309,7 +315,7 @@ export function ManageCampeonatoPage() {
                     )}
                 </Stack>
             </Container>
-            <Dialog open={chaveDialogOpen} onClose={handleCloseChaveDialog}>
+            <Dialog open={chaveamentoDialog} onClose={handleCloseChaveDialog}>
                 <DialogTitle>Chaveamento já gerado</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -323,7 +329,7 @@ export function ManageCampeonatoPage() {
                 </DialogActions>
 
             </Dialog>
-            <Dialog open={deleteDialogOpen} onClose={handleCloseDeleteDialog}>
+            <Dialog open={deleteDialog} onClose={handleCloseDeleteDialog}>
                 <DialogTitle>Confirmar Exclusão</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -339,7 +345,7 @@ export function ManageCampeonatoPage() {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Dialog open={deletePartDialogOpen} onClose={handleCloseDeleteChaveDialog}>
+            <Dialog open={deleteChaveDialog} onClose={handleCloseDeleteChaveDialog}>
                 <DialogTitle>Confirmar Exclusão das Partidas</DialogTitle>
                 <DialogContent>
                     <DialogContentText>

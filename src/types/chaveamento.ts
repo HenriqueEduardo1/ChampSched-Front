@@ -5,7 +5,3 @@ export interface ChaveamentoType {
     totalPartidas: number;
     partidas: PartidaType[];
 }
-
-export interface CreateChaveamento {
-    campeonatoId: number;
-}

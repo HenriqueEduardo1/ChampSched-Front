@@ -21,15 +21,12 @@ const theme = createTheme({
     palette: {
         mode: 'light',
         
-        // Suas cores existentes
         primary: {
             main: '#134686',
         },
         secondary: {
             main: '#d78005',
         },
-
-        // --- Novas Paletas de Intenção ---
 
         /**
          * Vermelho para erros, validações, botões de "deletar".
@@ -55,8 +52,6 @@ const theme = createTheme({
         success: {
             main: '#2e7d32',
         },
-
-        // --- Novas Paletas de Fundo e Texto ---
         
         /**
          * Define as cores de fundo da aplicação.
