@@ -2,9 +2,9 @@
  * URL base da sua API Spring Boot.
  * (Pode ser movido para um arquivo .env no futuro)
  */
-// export const API_BASE_URL = 'http://localhost:8080/api';
+export const API_BASE_URL = 'http://localhost:8080/api';
 
-export const API_BASE_URL = 'https://champsched.onrender.com/api';
+// export const API_BASE_URL = 'https://champsched.onrender.com/api';
 
 /**
  * Retorna os headers de autenticação (Bearer Token)

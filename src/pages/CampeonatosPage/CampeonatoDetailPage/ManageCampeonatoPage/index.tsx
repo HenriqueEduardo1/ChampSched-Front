@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
 import { useParams, useNavigate} from 'react-router-dom';
 import {
     Box,
@@ -28,6 +28,11 @@ import { deleteCampeonato, getCampeonatoById } from '../../../../services/campeo
 import { PartidaCard } from '../../../../components/PartidaCard';
 import { Delete } from '@mui/icons-material';
 
+interface LinePath {
+    id: string;
+    d: string;
+}
+
 export function ManageCampeonatoPage() {
     const { id } = useParams<{ id: string }>(); // ID do Campeonato
     const [currentUserId, setCurrentUserId] = useState<number | null>(null); // Retirar quando o login estiver pronto
@@ -42,6 +47,14 @@ export function ManageCampeonatoPage() {
     const [deleteDialog, setDeleteDialog] = useState(false);
     const [chaveamentoDialog, setChaveamentoDialog] = useState(false);
     const [deleteChaveDialog, setDeleteChaveDialog] = useState(false);
+
+    // Armazena as referências dos elementos DOM de cada card
+    const cardRefs = useRef<Record<number, HTMLElement | null>>({});
+    // Referência do contêiner principal do chaveamento
+    const containerRef = useRef<HTMLDivElement>(null);
+    // Estado para armazenar os <path> do SVG
+    const [lines, setLines] = useState<LinePath[]>([]);
+
     const [snackbar, setSnackBar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' | 'info' }>({ open: false, message: '', severity: 'info' });
     const theme = useTheme();
 
@@ -191,6 +204,102 @@ export function ManageCampeonatoPage() {
 
     }, [partidas]);
 
+    useLayoutEffect(() => {
+        // console.log("[EFEITO] useLayoutEffect foi disparado.");
+        // console.log("[EFEITO] Partidas:", partidas);
+
+        const calculateLines = () => {
+            // console.log("[CALC] calculateLines() iniciada.");
+            // console.log("[CALC] containerRef.current:", containerRef.current);
+            // console.log("[CALC] cardRefs.current:", cardRefs.current);
+            if (!partidas || !containerRef.current) {
+                setLines([]); // Limpa as linhas se não houver partidas
+                return;
+            }
+
+            const newLines: LinePath[] = [];
+            const containerRect = containerRef.current.getBoundingClientRect();
+
+            if (containerRect.width === 0 || containerRect.height === 0) {
+            return;
+            }
+
+            for (const partida of partidas) {
+
+                if (partida.proximaPartidaId === null) {
+                    continue;
+                }
+
+                const startEl = cardRefs.current[partida.id];
+                const endEl = cardRefs.current[partida.proximaPartidaId];
+
+                if (!startEl) {
+                    console.error(`[LOOP #${partida.id}] ERRO: Não foi encontrado o elemento (startEl) para Partida #${partida.id}`);
+                }
+                if (!endEl) {
+                    console.error(`[LOOP #${partida.id}] ERRO: Não foi encontrado o elemento (endEl) para a próxima partida #${partida.proximaPartidaId}`);
+                }
+
+                if (!startEl || !endEl) {
+                    continue; // Pula esta linha
+                }
+
+                // Pega as dimensões e posições
+                const startRect = startEl.getBoundingClientRect();
+                const endRect = endEl.getBoundingClientRect();
+
+                // Calcula coordenadas relativas ao contêiner
+                // Ponto de Início: Meio do lado direito do card inicial
+                const startX = startRect.right - containerRect.left;
+                const startY = startRect.top + startRect.height / 2 - containerRect.top;
+
+                // Ponto Final: Meio do lado esquerdo do card final
+                const endX = endRect.left - containerRect.left;
+                
+                // Ajusta a altura Y do ponto final
+                // Se for a posição 1, mira na metade de cima do card
+                // Se for a posição 2, mira na metade de baixo
+                let endY = endRect.top + endRect.height / 2 - containerRect.top;
+                if (partida.posicaoNaProximaPartida === 1) {
+                    endY = endRect.top + endRect.height * 0.25 - containerRect.top;
+                } else if (partida.posicaoNaProximaPartida === 2) {
+                    endY = endRect.top + endRect.height * 0.75 - containerRect.top;
+                }
+
+                // Cria o path do SVG (uma curva de Bezier suave)
+                const midX = startX + (endX - startX) / 2;
+
+                // M = Mover para (início)
+                // L = Linha para
+                const d = `M ${startX} ${startY} L ${midX} ${startY} L ${midX} ${endY} L ${endX} ${endY}`;
+
+                newLines.push({
+                    id: `line-${partida.id}-to-${partida.proximaPartidaId}`,
+                    d: d,
+                });
+            }
+            setLines(newLines);
+        };
+
+        // Calcula as linhas na montagem e quando as partidas mudam
+        calculateLines();
+
+        // Adiciona um ResizeObserver para recalcular ao mudar o tamanho
+        const resizeObserver = new ResizeObserver(() => {
+            calculateLines();
+        });
+
+        if (containerRef.current) {
+            resizeObserver.observe(containerRef.current);
+        }
+
+        // Limpeza: remove o observer
+        return () => {
+            resizeObserver.disconnect();
+        };
+
+    }, [partidas, partidasPorFase]);
+
     if (isLoading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
@@ -231,19 +340,45 @@ export function ManageCampeonatoPage() {
                     Partidas
                 </Typography>
                     <Box
+                        ref={containerRef}
                         sx={{
                             display: 'flex',
                             flexDirection: 'row',
-                            gap: 6, // Espaço entre as colunas (fases)
+                            gap: 8, // Espaço entre as colunas (fases)
                             p: 2,
                             overflow: 'auto',
                             minHeight: 300,
                             justifyContent: 'center',
                             backgroundColor: theme.palette.grey[50],
                             borderRadius: 2,
-                            border: `1px solid ${theme.palette.divider}`
+                            border: `1px solid ${theme.palette.divider}`,
+                            position: 'relative',
                         }}
                     >
+                        <Box
+                            component="svg"
+                            sx={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '100%',
+                                pointerEvents: 'none', // Deixa os cliques "atravessarem"
+                                zIndex: 1,
+                            }}
+                        >
+                            <g strokeLinejoin="round" strokeLinecap="round">
+                                {lines.map(line => (
+                                    <path
+                                        key={line.id}
+                                        d={line.d}
+                                        stroke={theme.palette.primary.main}
+                                        strokeWidth={3}
+                                        fill="none"
+                                    />
+                                ))}
+                            </g>
+                        </Box>
                         {Object.keys(partidasPorFase).sort((a, b) => Number(a) - Number(b)).map(fase => (
                             <Stack
                                 key={fase}
@@ -251,6 +386,8 @@ export function ManageCampeonatoPage() {
                                 sx={{
                                     justifyContent: 'center', // Centraliza as partidas na coluna
                                     minHeight: '100%', // Garante que a coluna ocupe a altura
+                                    position: 'relative',
+                                    zIndex: 2, // Garante que os cards fiquem acima das linhas SVG
                                 }}
                             >
                                 <Typography variant="h6" component="h3" textAlign="center" sx={{ mb: 2 }}>
@@ -258,7 +395,14 @@ export function ManageCampeonatoPage() {
                                 </Typography>
                                 
                                 {partidasPorFase[Number(fase)].map(partida => (
-                                    <PartidaCard key={partida.id} partida={partida} />
+                                    <PartidaCard
+                                    key={partida.id}
+                                    partida={partida}
+                                    ref={el => {
+                                        console.log(`[REF] Setando ref para Partida #${partida.id}`, el);
+                                        cardRefs.current[partida.id] = el;
+                                    }}
+                                    />
                                 ))}
                             </Stack>
                         ))}
@@ -281,7 +425,7 @@ export function ManageCampeonatoPage() {
                     </Typography>
                 )}
                 <Divider sx={{ my: 4 }} />
-                <Stack spacing={2} direction="row">
+                <Stack spacing={4} direction="row">
                     <Button
                         variant="contained"
                         color="primary"
