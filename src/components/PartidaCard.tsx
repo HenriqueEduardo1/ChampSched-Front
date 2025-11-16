@@ -27,6 +27,9 @@ export const PartidaCard = forwardRef<HTMLDivElement, PartidaCardProps>(
             >
                 <Stack divider={<Divider flexItem />}>
                     <Box sx={{ p: 2 }}>
+                        <Typography> {/* para debug */}
+                            {partida.id}
+                        </Typography>
                         <Typography variant="body1" sx={timeTypographyStyle(partida.timeA)}>
                             {partida.timeA ?? 'A definir'}
                         </Typography>
