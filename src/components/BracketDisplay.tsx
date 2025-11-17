@@ -62,25 +62,31 @@ export function BracketDisplay({ partidas, bracketData, fasesReversed, cardRefs 
                     ))}
                 </g>
             </Box>
-            {bracketData.fases.map(fase => (
-                <Stack
-                    key={`top-${fase}`}
-                    spacing={4}
-                    sx={{ justifyContent: 'space-around', height: '100%', position: 'relative' }}
-                >
-                    <Typography variant="h6" component="h3" textAlign="center" sx={{ mb: 2 }}>
-                        {fase === 0 ? 'Play-in' : `Fase ${fase}`}
-                    </Typography>
-                    {/* Renderiza apenas as partidas da metade esquerda */}
-                    {bracketData.top[fase]?.map(partida => (
-                        <PartidaCard
-                            key={partida.id}
-                            partida={partida}
-                            ref={el => (cardRefs.current[partida.id] = el)}
-                        />
-                    ))}
-                </Stack>
-            ))}
+            {bracketData.fases.map(fase => {
+                const partidasNestaFase = bracketData.bottom[fase];
+                const hasPartidas = partidasNestaFase && partidasNestaFase.length > 0;
+                if (!hasPartidas) {
+                    return null;
+                }
+                return (
+                    <Stack
+                        key={`bottom-${fase}`}
+                        spacing={4}
+                        sx={{ justifyContent: 'space-around', height: '100%', position: 'relative' }}
+                    >
+                        <Typography variant="h6" component="h3" textAlign="center" sx={{ mb: 2 }}>
+                            {fase === 0 ? 'Play-in' : `Fase ${fase}`}
+                        </Typography>
+                        {partidasNestaFase.map(partida => (
+                            <PartidaCard
+                                key={partida.id}
+                                partida={partida}
+                                ref={el => (cardRefs.current[partida.id] = el)}
+                            />
+                        ))}
+                    </Stack>
+                );
+            })}
 
             {bracketData.final && (
                 <Stack
@@ -100,25 +106,31 @@ export function BracketDisplay({ partidas, bracketData, fasesReversed, cardRefs 
             )}
 
             {/* Itera sobre as fases em ordem [..., 2, 1, 0] */}
-            {fasesReversed.map(fase => (
-                <Stack
-                    key={`bottom-${fase}`}
-                    spacing={4}
-                    sx={{ justifyContent: 'space-around', height: '100%', position: 'relative' }}
-                >
-                    <Typography variant="h6" component="h3" textAlign="center" sx={{ mb: 2 }}>
-                        {fase === 0 ? 'Play-in' : `Fase ${fase}`}
-                    </Typography>
-                    {/* Renderiza apenas as partidas da metade direita */}
-                    {bracketData.bottom[fase]?.map(partida => (
-                        <PartidaCard
-                            key={partida.id}
-                            partida={partida}
-                            ref={el => (cardRefs.current[partida.id] = el)}
-                        />
-                    ))}
-                </Stack>
-            ))}
+            {fasesReversed.map(fase => {
+                const partidasNestaFase = bracketData.bottom[fase];
+                const hasPartidas = partidasNestaFase && partidasNestaFase.length > 0;
+                if (!hasPartidas) {
+                    return null;
+                }
+                return (
+                    <Stack
+                        key={`bottom-${fase}`}
+                        spacing={4}
+                        sx={{ justifyContent: 'space-around', height: '100%', position: 'relative' }}
+                    >
+                        <Typography variant="h6" component="h3" textAlign="center" sx={{ mb: 2 }}>
+                            {fase === 0 ? 'Play-in' : `Fase ${fase}`}
+                        </Typography>
+                        {partidasNestaFase.map(partida => (
+                            <PartidaCard
+                                key={partida.id}
+                                partida={partida}
+                                ref={el => (cardRefs.current[partida.id] = el)}
+                            />
+                        ))}
+                    </Stack>
+                );
+            })}
             {(!partidas || partidas.length === 0) && (
                 <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Typography variant="body1" color="textSecondary">

@@ -47,7 +47,7 @@ export function useBracketSVG(
 
                 let startX, startY, endX, endY, midX;
 
-                // --- LÓGICA DE POSIÇÃO (A FONTE DA VERDADE) ---
+                // --- LÓGICA DE POSIÇÃO ---
                 // O fluxo é da esquerda p/ direita?
                 const isLeftToRight = startRect.left < endRect.left;
 
