@@ -63,14 +63,14 @@ export function BracketDisplay({ partidas, bracketData, fasesReversed, cardRefs 
                 </g>
             </Box>
             {bracketData.fases.map(fase => {
-                const partidasNestaFase = bracketData.bottom[fase];
+                const partidasNestaFase = bracketData.top[fase];
                 const hasPartidas = partidasNestaFase && partidasNestaFase.length > 0;
                 if (!hasPartidas) {
                     return null;
                 }
                 return (
                     <Stack
-                        key={`bottom-${fase}`}
+                        key={`top-${fase}`}
                         spacing={4}
                         sx={{ justifyContent: 'space-around', height: '100%', position: 'relative' }}
                     >
