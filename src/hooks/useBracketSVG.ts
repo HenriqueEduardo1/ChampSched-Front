@@ -16,9 +16,6 @@ export function useBracketSVG(
 
     useLayoutEffect(() => {
         const calculateLines = () => {
-            
-            console.log("[CALC] calculateLines() iniciada.");
-
             if (!partidas || !containerRef.current) {
                 console.warn("[CALC] WARN: 'partidas' ou 'containerRef' está nulo/vazio.");
                 setLines([]);
@@ -34,7 +31,6 @@ export function useBracketSVG(
             setSvgDimensions({ width: scrollWidth, height: scrollHeight });
 
             if (containerRect.width === 0 || containerRect.height === 0) {
-                console.warn("[CALC] WARN: Contêiner tem tamanho zero.");
                 return;
             }
 
@@ -55,7 +51,7 @@ export function useBracketSVG(
                 // O fluxo é da esquerda p/ direita?
                 const isLeftToRight = startRect.left < endRect.left;
 
-                // Lógica Y (Vertical) - não muda
+                // Lógica Y (Vertical)
                 startY = startRect.top + startRect.height / 2 - containerRect.top;
                 if (partida.posicaoNaProximaPartida === 1) {
                     endY = endRect.top + endRect.height * 0.25 - containerRect.top;
@@ -83,7 +79,6 @@ export function useBracketSVG(
                 });
             }
             
-            console.log("[CALC] Linhas calculadas (newLines):", newLines);
             setLines(newLines);
         };
         

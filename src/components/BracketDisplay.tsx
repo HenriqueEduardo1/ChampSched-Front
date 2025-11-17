@@ -24,7 +24,7 @@ export function BracketDisplay({ partidas, bracketData, fasesReversed, cardRefs 
             ref={containerRef}
             sx={{
                 display: 'flex',
-                flexDirection: 'row', // O contêiner principal agora é uma LINHA
+                flexDirection: 'row',
                 gap: 6,
                 p: 2,
                 overflowX: 'auto',

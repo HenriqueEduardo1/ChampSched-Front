@@ -134,7 +134,6 @@ export function ManageCampeonatoPage() {
                         variant="outlined"
                         endIcon={<Delete />}
                         color="error"
-                        // Use 'openDelete' diretamente
                         onClick={openDelete}
                     >
                         Excluir Campeonato
