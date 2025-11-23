@@ -15,7 +15,8 @@ import {
     Select,
     MenuItem,
     Button,
-    Snackbar
+    Snackbar,
+    Stack
 } from '@mui/material';
 import type { SelectChangeEvent } from "@mui/material";
 import type { CampeonatoType } from '../../../types/campeonato';
@@ -34,7 +35,7 @@ export function CampeonatoDetailPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDeleting, setIsDeleting] = useState<number | null>(null);
-    const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+    const [currentUserId, setCurrentUserId] = useState<number | null>(null); // Retirar quando o login estiver pronto
     const [error, setError] = useState<string | null>(null);
     const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
         open: false,
@@ -59,8 +60,8 @@ export function CampeonatoDetailPage() {
                 const campeonatoId = Number(id);
 
                 // Busca o usuário logado
-                const user = await getMe();
-                setCurrentUserId(user.id);
+                const user = await getMe(); // Retirar quando o login estiver pronto
+                setCurrentUserId(user.id); // Retirar quando o login estiver pronto
                 
                 // Busca os dados do campeonato e os times do usuário em paralelo
                 const [campeonatoData, userTeamsData] = await Promise.all([
@@ -82,7 +83,7 @@ export function CampeonatoDetailPage() {
     }, [id]);
 
     // Filtra os times para o dropdown
-    // Mostra apenas os times do usuário que AINDA NÃO estão no campeonato
+    // Mostra apenas os times do usuário que ainda não estão no campeonato
     const availableTeamsToJoin = useMemo(() => {
         if (!campeonato || !myTeams) return [];
         
@@ -140,7 +141,6 @@ export function CampeonatoDetailPage() {
         }
     };
 
-    // (Funções de Snackbar copiadas da sua página de lista)
     const showSnackbar = (message: string, severity: "success" | "error") => {
         setSnackbar({ open: true, message, severity });
     };
@@ -149,7 +149,6 @@ export function CampeonatoDetailPage() {
         setSnackbar((prev) => ({ ...prev, open: false }));
     };
 
-    // --- Renderização ---
     if (isLoading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
@@ -166,7 +165,7 @@ export function CampeonatoDetailPage() {
         return <Alert severity="info">Campeonato não encontrado.</Alert>;
     }
 
-    const isOrganizer = currentUserId === campeonato.organizador.id;
+    const isOrganizer = currentUserId === campeonato.organizador.id; // Mudar quando o login estiver pronto
 
     return (
         <>
@@ -219,40 +218,51 @@ export function CampeonatoDetailPage() {
                         </Box>
 
                         <Divider sx={{ my: 2 }} />
-                        <Typography variant="h6" gutterBottom>
-                            Inscrever time
-                        </Typography>
-                        {availableTeamsToJoin.length > 0 ? (
-                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                                <FormControl sx={{ minWidth: 250 }}>
-                                    <InputLabel id="team-select-label">Selecione um time</InputLabel>
-                                    <Select
-                                        labelId="team-select-label"
-                                        label="Selecione um time"
-                                        value={selectedTeamId}
-                                        onChange={handleTeamSelectChange}
-                                    >
-                                        {availableTeamsToJoin.map((time) => (
-                                            <MenuItem key={time.id} value={time.id}>
-                                                {time.nome}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                                <Button
-                                    variant="contained"
-                                    onClick={handleJoinSubmit}
-                                    // O botão fica desabilitado se nada for selecionado
-                                    disabled={!selectedTeamId || isSubmitting} 
-                                >
-                                    {isSubmitting ? "Inscrevendo..." : "Inscrever Time"}
-                                </Button>
-                            </Box>
-                        ) : (
-                            <Typography variant="body2" color="text.secondary">
-                                Todos os seus times já estão participando deste campeonato.
+                        <Stack spacing={2} sx={{ mt: 2 }}>
+                            <Typography variant="h6" gutterBottom>
+                                Inscrever time
                             </Typography>
-                        )}
+                            {availableTeamsToJoin.length > 0 ? (
+                                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                                    <FormControl sx={{ minWidth: 250 }}>
+                                        <InputLabel id="team-select-label">Selecione um time</InputLabel>
+                                        <Select
+                                            labelId="team-select-label"
+                                            label="Selecione um time"
+                                            value={selectedTeamId}
+                                            onChange={handleTeamSelectChange}
+                                        >
+                                            {availableTeamsToJoin.map((time) => (
+                                                <MenuItem key={time.id} value={time.id}>
+                                                    {time.nome}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleJoinSubmit}
+                                        // O botão fica desabilitado se nada for selecionado
+                                        disabled={!selectedTeamId || isSubmitting}
+                                    >
+                                        {isSubmitting ? "Inscrevendo..." : "Inscrever Time"}
+                                    </Button>
+                                </Box>
+                            ) : (
+                                <Typography variant="body2" color="text.secondary">
+                                    Todos os seus times já estão participando deste campeonato.
+                                </Typography>
+                            )}
+                            <Button
+                                variant='contained'
+                                color='secondary'
+                                onClick={() => navigate(`/campeonatos/${campeonato.id}/gerenciar`)}
+                                disabled={!isOrganizer}
+                                sx={{maxWidth: 400}}
+                            >
+                                Gerenciar Campeonato
+                            </Button>
+                        </Stack>
                     </CardContent>
                 </Card>
             </Container>
